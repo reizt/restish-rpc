@@ -15,13 +15,13 @@ const devDeps = Object.keys(pkg.devDependencies ?? {});
 
 const mode = process.argv[2];
 if (mode === 'dev') {
-	opts.entryPoints = ['./src/index.ts'];
+	opts.entryPoints = ['./example/index.ts'];
 	opts.outfile = './tmp/dev-server.mjs';
 	opts.minify = false;
 	opts.sourcemap = true;
 	opts.external = [...deps, ...devDeps];
 } else {
-	opts.entryPoints = ['./src/index.ts'];
+	opts.entryPoints = ['./example/index.ts'];
 	opts.outfile = './dist/index.mjs';
 	opts.minify = false;
 	opts.sourcemap = true;

@@ -9,7 +9,7 @@
 		"types": ["vitest/globals"],
 
 		// paths
-		"baseUrl": "./",
+		"baseUrl": "./src",
 		"outDir": "tmp",
 
 		// transpilation
