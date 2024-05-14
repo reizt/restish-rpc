@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { DeleteNever } from './utils';
+import type { NeverIfEmpty } from './utils';
 
 // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 export interface Proc {
@@ -18,10 +18,17 @@ export type ProcOutput<P extends Proc> = ValueOf<{
 
 export type ProcResult<P extends Proc, R extends keyof P['output']> = {
 	result: R;
-} & DeleteNever<{
+} & NeverIfEmpty<{
 	value: {
 		[K in keyof P['output'][R]]: z.infer<P['output'][R][K]>;
 	};
 }>;
+
+export const procResult = <P extends Proc, R extends keyof P['output']>(...args: ProcResult<P, R> extends { value: any } ? [P, R, ProcResult<P, R>['value']] : [P, R]): ProcResult<P, R> => {
+	return {
+		result: args[1],
+		value: args[2],
+	} as ProcResult<P, R>;
+};
 
 export type ProcImpl<P extends Proc> = (input: ProcInput<P>) => Promise<ProcOutput<P>>;

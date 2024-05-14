@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import type { Proc, ProcImpl } from './proc';
-import type { DeleteNever, PartialIfOptional, SafeOmit, ValueOf } from './utils';
+import type { DeleteNever, NeverIfEmpty, PartialIfOptional, SafeOmit, ValueOf } from './utils';
 
 // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 type InformationalStatusCode = 100 | 101 | 102 | 103;
@@ -67,11 +67,11 @@ type MapRequestCookie<P extends Proc, S extends string, E extends Endpoint<P, S>
 type MapRequestBody<P extends Proc, S extends string, E extends Endpoint<P, S>> = PartialIfOptional<{
 	[K in keyof E['request']['mapping'] as E['request']['mapping'][K] extends `body.${infer Param}` ? Param : never]: InputParamType<S, E, K>;
 }>;
-export type EndpointInput<P extends Proc, S extends string, E extends Endpoint<P, S>> = DeleteNever<{ path: MapRequestPath<P, S, E> }> &
-	DeleteNever<{ query: MapRequestQuery<P, S, E> }> &
-	DeleteNever<{ header: MapRequestHeader<P, S, E> }> &
-	DeleteNever<{ cookie: MapRequestCookie<P, S, E> }> &
-	DeleteNever<{ body: MapRequestBody<P, S, E> }>;
+export type EndpointInput<P extends Proc, S extends string, E extends Endpoint<P, S>> = NeverIfEmpty<{ path: MapRequestPath<P, S, E> }> &
+	NeverIfEmpty<{ query: DeleteNever<MapRequestQuery<P, S, E>> }> &
+	NeverIfEmpty<{ header: DeleteNever<MapRequestHeader<P, S, E>> }> &
+	NeverIfEmpty<{ cookie: DeleteNever<MapRequestCookie<P, S, E>> }> &
+	NeverIfEmpty<{ body: DeleteNever<MapRequestBody<P, S, E>> }>;
 
 type OutputParamType<S extends string, E extends Endpoint<Proc, S>, R extends keyof E['response'], Param extends keyof E['response'][R]['mapping']> = R extends keyof E['proc']['output']
 	? Param extends keyof E['proc']['output'][R]
@@ -93,6 +93,6 @@ export type EndpointOutput<P extends Proc, S extends string, E extends Endpoint<
 }>;
 export type EndpointResult<P extends Proc, S extends string, E extends Endpoint<P, S>, R extends keyof E['response']> = {
 	status: E['response'][R]['status'];
-} & DeleteNever<{ header: MapResponseHeader<P, S, E, R> }> &
-	DeleteNever<{ cookie: MapResponseCookie<P, S, E, R> }> &
-	DeleteNever<{ body: MapResponseBody<P, S, E, R> }>;
+} & NeverIfEmpty<{ header: DeleteNever<MapResponseHeader<P, S, E, R>> }> &
+	NeverIfEmpty<{ cookie: DeleteNever<MapResponseCookie<P, S, E, R>> }> &
+	NeverIfEmpty<{ body: DeleteNever<MapResponseBody<P, S, E, R>> }>;

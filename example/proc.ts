@@ -11,8 +11,6 @@ export const getPostP = {
 		ok: {
 			post: postZ,
 		},
-		'error.unauthorized': {
-			message: z.string(),
-		},
+		'error.unauthorized': {},
 	},
 } satisfies Proc;

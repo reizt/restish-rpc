@@ -12,9 +12,6 @@ export const getPostEI: EndpointImpl<typeof getPostE> = async (procImpl, input) 
 	if (output.result === 'error.unauthorized') {
 		return {
 			status: 401,
-			body: {
-				message: output.value.message,
-			},
 		};
 	}
 	return {
