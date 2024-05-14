@@ -1,13 +1,15 @@
-import { type ProcImpl, procResult } from '../src';
-import { getPostP } from './proc';
+import { type ProcImpl, procResultBuilder } from '../src';
+import type { getPostP } from './proc';
+
+const result = procResultBuilder<typeof getPostP>();
 
 export const getPostPI: ProcImpl<typeof getPostP> = async (input) => {
 	console.log(input.id, input.authToken);
 	if (input.authToken !== 'xxx') {
-		return procResult(getPostP, 'error.unauthorized');
+		return result('error.unauthorized');
 	}
 
-	return procResult(getPostP, 'ok', {
+	return result('ok', {
 		post: {
 			id: input.id,
 			userId: 'xxx',

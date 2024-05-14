@@ -24,11 +24,13 @@ export type ProcResult<P extends Proc, R extends keyof P['output']> = {
 	};
 }>;
 
-export const procResult = <P extends Proc, R extends keyof P['output']>(...args: ProcResult<P, R> extends { value: any } ? [P, R, ProcResult<P, R>['value']] : [P, R]): ProcResult<P, R> => {
-	return {
-		result: args[1],
-		value: args[2],
-	} as ProcResult<P, R>;
+export const procResultBuilder = <P extends Proc>() => {
+	return <R extends keyof P['output']>(result: R, ...args: ProcResult<P, R> extends { value: any } ? [ProcResult<P, R>['value']] : []): ProcResult<P, R> => {
+		return {
+			result: result,
+			value: args[0],
+		} as ProcResult<P, R>;
+	};
 };
 
 export type ProcImpl<P extends Proc> = (input: ProcInput<P>) => Promise<ProcOutput<P>>;
