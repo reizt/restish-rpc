@@ -5,7 +5,7 @@
 	},
 	"files": {
 		"include": ["src", "*.*"],
-		"ignore": ["node_modules", ".git", "dist", "tmp"]
+		"ignore": ["node_modules", ".git", "dist", "tmp", "lib"]
 	},
 	"formatter": {
 		"indentStyle": "tab",
@@ -28,7 +28,8 @@
 				"noNonNullAssertion": "off"
 			},
 			"performance": {
-				"noBarrelFile": "off"
+				"noBarrelFile": "off",
+				"noReExportAll": "off"
 			},
 			"correctness": {
 				"noUndeclaredVariables": "off",

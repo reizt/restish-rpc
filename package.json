@@ -1,23 +1,40 @@
 {
-	"name": "ts",
-	"version": "1.0.0",
-	"repository": "git@github.com:reizt/ts.git",
+	"name": "restish-rpc",
+	"version": "0.0.2",
+	"repository": "git@github.com:reizt/proc.git",
 	"author": "reizt <reizt.dev@gmail.com>",
 	"license": "MIT",
 	"type": "module",
+	"main": "./lib/index.js",
+	"types": "./lib/index.d.ts",
+	"module": "./lib/index.mjs",
+	"exports": {
+		".": {
+			"import": "./lib/index.mjs",
+			"require": "./lib/index.cjs",
+			"types": "./lib/index.d.ts"
+		},
+		"./package.json": "./package.json"
+	},
 	"scripts": {
-		"dev": "nodemon --exec 'run-s clear build.dev start.dev' --watch src --ext ts --delay 0.2 --quiet",
-		"clear": "clear",
-		"build": "rm -f dist/* && node --no-warnings esbuild.mjs",
-		"build.dev": "node --no-warnings esbuild.mjs dev",
-		"start": "node dist/index.mjs",
-		"start.dev": "node tmp/dev-server.mjs",
+		"dev": "nodemon --exec 'run-s dev.clear dev.build dev.start' --watch src --ext ts --delay 0.2 --quiet",
+		"dev.build": "node --no-warnings esbuild.mjs dev",
+		"dev.start": "node tmp/dev-server.mjs",
+		"dev.clear": "clear",
+		"clean": "rm -rf lib",
+		"build": "run-s clean build.*",
+		"build.cjs": "node --no-warnings esbuild.mjs cjs",
+		"build.esm": "node --no-warnings esbuild.mjs esm",
+		"build.types": "tsc --project tsconfig.tsc.json",
 		"check-all": "run-p typecheck fmt.check",
 		"fmt": "biome check --apply .",
 		"fmt.check": "biome check .",
 		"typecheck": "tsc --incremental --noEmit",
 		"ut": "vitest run",
 		"ut.watch": "vitest watch"
+	},
+	"dependencies": {
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.7.3",
@@ -28,8 +45,5 @@
 		"npm-run-all": "^4.1.5",
 		"typescript": "^5.4.5",
 		"vitest": "^1.6.0"
-	},
-	"dependencies": {
-		"zod": "^3.23.8"
 	}
 }
