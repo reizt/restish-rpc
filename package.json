@@ -1,0 +1,32 @@
+{
+	"name": "ts",
+	"version": "1.0.0",
+	"repository": "git@github.com:reizt/ts.git",
+	"author": "reizt <reizt.dev@gmail.com>",
+	"license": "MIT",
+	"type": "module",
+	"scripts": {
+		"dev": "nodemon --exec 'run-s clear build.dev start.dev' --watch src --ext ts --delay 0.2 --quiet",
+		"clear": "clear",
+		"build": "rm -f dist/* && node --no-warnings esbuild.mjs",
+		"build.dev": "node --no-warnings esbuild.mjs dev",
+		"start": "node dist/index.mjs",
+		"start.dev": "node tmp/dev-server.mjs",
+		"check-all": "run-p typecheck fmt.check",
+		"fmt": "biome check --apply .",
+		"fmt.check": "biome check .",
+		"typecheck": "tsc --incremental --noEmit",
+		"ut": "vitest run",
+		"ut.watch": "vitest watch"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.7.3",
+		"@types/node": "^20.12.11",
+		"esbuild": "^0.21.1",
+		"lefthook": "^1.6.10",
+		"nodemon": "^3.1.0",
+		"npm-run-all": "^4.1.5",
+		"typescript": "^5.4.5",
+		"vitest": "^1.6.0"
+	}
+}
