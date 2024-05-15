@@ -2,7 +2,7 @@ import { defineEndpoint } from '../src';
 import { getPostP } from './proc';
 
 export const getPostE = defineEndpoint(getPostP, '/posts/{id}', {
-	method: 'GET',
+	method: 'get',
 	request: {
 		mapping: {
 			id: 'path.id',

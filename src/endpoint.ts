@@ -1,6 +1,8 @@
 import type { Proc } from './proc';
 import type { SafeOmit } from './utils';
 
+export type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options';
+
 // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 type InformationalStatusCode = 100 | 101 | 102 | 103;
 type SuccessStatusCode = 200 | 201 | 202 | 203 | 204 | 205 | 206 | 207 | 208 | 226;
@@ -21,7 +23,7 @@ export type ResponseMapping = `header.${string}` | `cookie.${string}` | `body.${
 export interface Endpoint<P extends Proc, S extends string> {
 	proc: P;
 	pathname: S;
-	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+	method: HttpMethod;
 	request: {
 		format?: 'json' | 'formdata'; // default: 'json'
 		mapping: {
