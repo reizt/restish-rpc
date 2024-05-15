@@ -20,12 +20,12 @@ const build = (input, output, format, minify, sourcemap, bundleDeps) => {
 			platform: 'node',
 			format,
 			color: true,
-			bundle: true,
+			bundle: false,
 			entryPoints: [input],
 			outfile: output,
 			minify,
 			sourcemap,
-			external: bundleDeps ? undefined : deps,
+			// external: bundleDeps ? undefined : deps,
 		});
 		console.log(`Compiled ${Date.now() - start}ms`);
 		process.exit(0);

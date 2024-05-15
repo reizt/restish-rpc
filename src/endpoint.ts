@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { Proc, ProcImpl } from './proc';
+import type { Proc } from './proc';
 import type { DeleteNever, NeverIfEmpty, PartialIfOptional, SafeOmit, ValueOf } from './utils';
 
 // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
@@ -48,7 +48,7 @@ export interface Endpoint<P extends Proc, S extends string> {
 }
 
 export type EndpointImpl<E> = E extends Endpoint<infer P, infer S> ? EndpointImplType<P, S, E> : never;
-type EndpointImplType<P extends Proc, S extends string, E extends Endpoint<P, S>> = (procImpl: ProcImpl<E['proc']>, input: EndpointInput<P, S, E>) => Promise<EndpointOutput<P, S, E>>;
+type EndpointImplType<P extends Proc, S extends string, E extends Endpoint<P, S>> = (input: EndpointInput<P, S, E>) => Promise<EndpointOutput<P, S, E>>;
 
 type InputParamType<S extends string, E extends Endpoint<Proc, S>, Param extends keyof E['request']['mapping']> = Param extends keyof E['proc']['input'] ? z.infer<E['proc']['input'][Param]> : never;
 

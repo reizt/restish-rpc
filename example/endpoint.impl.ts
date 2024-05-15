@@ -2,22 +2,24 @@ import type { EndpointImpl } from '../src';
 import type { getPostE } from './endpoint';
 
 // You don't have to write the endpoint implementation by hand.
-// You can get the implementation by calling `implementEndpoint` function from 'src/endpoint.impl'.
-// The `implementEndpoint` function takes an endpoint definition and returns an endpoint implementation.
-export const getPostEI: EndpointImpl<typeof getPostE> = async (procImpl, input) => {
-	const output = await procImpl({
-		id: input.path.id,
-		authToken: input.cookie['auth-token'],
-	});
-	if (output.result === 'error.unauthorized') {
+// You can get the implementation by calling `autoEndpointImpl` function from 'src/endpoint.impl'.
+// The `autoEndpointImpl` function takes an endpoint definition and returns an endpoint implementation.
+export const getPostEI: EndpointImpl<typeof getPostE> = async (input) => {
+	if (input.path.id == null) {
 		return {
 			status: 401,
 		};
 	}
+
 	return {
 		status: 200,
 		body: {
-			post: output.value.post,
+			post: {
+				id: input.path.id,
+				userId: 'xxx',
+				title: 'Hello, World!',
+				body: 'This is a test post.',
+			},
 		},
 	};
 };

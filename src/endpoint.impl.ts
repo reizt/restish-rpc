@@ -12,12 +12,12 @@ const objectFind = <T>(obj: T, predicate: <K extends keyof T>(key: K, value: T[K
 
 type ForceProc<E> = E extends Endpoint<infer P, infer S> ? P : never;
 type ForcePathname<E> = E extends Endpoint<infer P, infer S> ? S : never;
-export const generateEndpointImpl = <E>(endpoint: E): EndpointImpl<E> => {
+export const autoEndpointImpl = <E>(endpoint: E, procImpl: ProcImpl<ForceProc<E>>): EndpointImpl<E> => {
 	type $P = ForceProc<E>;
 	type $S = ForcePathname<E>;
 	type $E = Endpoint<$P, $S>;
 	const ep: $E = endpoint as any;
-	return (async (procImpl: ProcImpl<$P>, input: EndpointInput<$P, $S, $E>) => {
+	return (async (input: EndpointInput<$P, $S, $E>) => {
 		const procInput: ProcInput<$P> = {} as any;
 		for (const param in ep.request.mapping) {
 			const [sourceGroup, sourceKey] = ep.request.mapping[param].split('.');
