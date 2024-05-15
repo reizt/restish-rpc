@@ -3,6 +3,9 @@ export type ValueOf<T> = T[keyof T];
 export type NeverIfEmpty<T> = {
 	[K in keyof T as keyof T[K] extends never ? never : K]: T[K];
 };
+export type DeleteIfValueIsNeverOrEmptyObj<T> = {
+	[K in keyof T as T[K] extends never ? never : keyof T[K] extends never ? never : K]: T[K];
+};
 export type DeleteNever<T> = {
 	[K in keyof T as T[K] extends never ? never : K]: T[K];
 };

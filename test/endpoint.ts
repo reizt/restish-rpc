@@ -18,9 +18,11 @@ export const getPostE = defineEndpoint(getPostP, '/posts/{id}', {
 		},
 		'error.unauthorized': {
 			status: 401,
-			mapping: {
-				message: 'body.message',
-			},
+			mapping: {},
+		},
+		'error.not_found': {
+			status: 404,
+			mapping: {},
 		},
 	},
 });

@@ -11,6 +11,7 @@ export const getPostP = {
 		ok: {
 			post: postZ,
 		},
+		'error.not_found': {},
 		'error.unauthorized': {},
 	},
 } satisfies Proc;

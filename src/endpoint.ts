@@ -1,6 +1,5 @@
-import type { z } from 'zod';
 import type { Proc } from './proc';
-import type { DeleteNever, NeverIfEmpty, PartialIfOptional, SafeOmit, ValueOf } from './utils';
+import type { SafeOmit } from './utils';
 
 // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 type InformationalStatusCode = 100 | 101 | 102 | 103;
@@ -19,13 +18,6 @@ export type RequestMappingOf<S extends string> =
 	| `body.${string}`;
 export type ResponseMapping = `header.${string}` | `cookie.${string}` | `body.${string}`;
 
-export const defineEndpoint = <P extends Proc, S extends string, Config extends SafeOmit<Endpoint<P, S>, 'proc' | 'pathname'>>(
-	proc: P,
-	pathname: S,
-	config: Config,
-): Config & { proc: P; pathname: S } => {
-	return { ...config, proc, pathname } satisfies Endpoint<P, S>;
-};
 export interface Endpoint<P extends Proc, S extends string> {
 	proc: P;
 	pathname: S;
@@ -47,52 +39,10 @@ export interface Endpoint<P extends Proc, S extends string> {
 	};
 }
 
-export type EndpointImpl<E> = E extends Endpoint<infer P, infer S> ? EndpointImplType<P, S, E> : never;
-type EndpointImplType<P extends Proc, S extends string, E extends Endpoint<P, S>> = (input: EndpointInput<P, S, E>) => Promise<EndpointOutput<P, S, E>>;
-
-type InputParamType<S extends string, E extends Endpoint<Proc, S>, Param extends keyof E['request']['mapping']> = Param extends keyof E['proc']['input'] ? z.infer<E['proc']['input'][Param]> : never;
-
-type MapRequestPath<P extends Proc, S extends string, E extends Endpoint<P, S>> = PartialIfOptional<{
-	[K in keyof E['request']['mapping'] as E['request']['mapping'][K] extends `path.${infer Param}` ? Param : never]: InputParamType<S, E, K>;
-}>;
-type MapRequestQuery<P extends Proc, S extends string, E extends Endpoint<P, S>> = PartialIfOptional<{
-	[K in keyof E['request']['mapping'] as E['request']['mapping'][K] extends `query.${infer Param}` ? Param : never]: InputParamType<S, E, K>;
-}>;
-type MapRequestHeader<P extends Proc, S extends string, E extends Endpoint<P, S>> = PartialIfOptional<{
-	[K in keyof E['request']['mapping'] as E['request']['mapping'][K] extends `header.${infer Param}` ? Param : never]: InputParamType<S, E, K>;
-}>;
-type MapRequestCookie<P extends Proc, S extends string, E extends Endpoint<P, S>> = PartialIfOptional<{
-	[K in keyof E['request']['mapping'] as E['request']['mapping'][K] extends `cookie.${infer Param}` ? Param : never]: InputParamType<S, E, K>;
-}>;
-type MapRequestBody<P extends Proc, S extends string, E extends Endpoint<P, S>> = PartialIfOptional<{
-	[K in keyof E['request']['mapping'] as E['request']['mapping'][K] extends `body.${infer Param}` ? Param : never]: InputParamType<S, E, K>;
-}>;
-export type EndpointInput<P extends Proc, S extends string, E extends Endpoint<P, S>> = NeverIfEmpty<{ path: MapRequestPath<P, S, E> }> &
-	NeverIfEmpty<{ query: DeleteNever<MapRequestQuery<P, S, E>> }> &
-	NeverIfEmpty<{ header: DeleteNever<MapRequestHeader<P, S, E>> }> &
-	NeverIfEmpty<{ cookie: DeleteNever<MapRequestCookie<P, S, E>> }> &
-	NeverIfEmpty<{ body: DeleteNever<MapRequestBody<P, S, E>> }>;
-
-type OutputParamType<S extends string, E extends Endpoint<Proc, S>, R extends keyof E['response'], Param extends keyof E['response'][R]['mapping']> = R extends keyof E['proc']['output']
-	? Param extends keyof E['proc']['output'][R]
-		? z.infer<E['proc']['output'][R][Param]>
-		: never
-	: never;
-
-type MapResponseHeader<P extends Proc, S extends string, E extends Endpoint<P, S>, R extends keyof E['response']> = PartialIfOptional<{
-	[K in keyof E['response'][R]['mapping'] as E['response'][R]['mapping'][K] extends `header.${infer Param}` ? Param : never]: OutputParamType<S, E, R, K>;
-}>;
-type MapResponseCookie<P extends Proc, S extends string, E extends Endpoint<P, S>, R extends keyof E['response']> = PartialIfOptional<{
-	[K in keyof E['response'][R]['mapping'] as E['response'][R]['mapping'][K] extends `cookie.${infer Param}` ? Param : never]: OutputParamType<S, E, R, K>;
-}>;
-type MapResponseBody<P extends Proc, S extends string, E extends Endpoint<P, S>, R extends keyof E['response']> = PartialIfOptional<{
-	[K in keyof E['response'][R]['mapping'] as E['response'][R]['mapping'][K] extends `body.${infer Param}` ? Param : never]: OutputParamType<S, E, R, K>;
-}>;
-export type EndpointOutput<P extends Proc, S extends string, E extends Endpoint<P, S>> = ValueOf<{
-	[R in keyof E['response']]: EndpointResult<P, S, E, R>;
-}>;
-export type EndpointResult<P extends Proc, S extends string, E extends Endpoint<P, S>, R extends keyof E['response']> = {
-	status: E['response'][R]['status'];
-} & NeverIfEmpty<{ header: DeleteNever<MapResponseHeader<P, S, E, R>> }> &
-	NeverIfEmpty<{ cookie: DeleteNever<MapResponseCookie<P, S, E, R>> }> &
-	NeverIfEmpty<{ body: DeleteNever<MapResponseBody<P, S, E, R>> }>;
+export const defineEndpoint = <P extends Proc, S extends string, Config extends SafeOmit<Endpoint<P, S>, 'proc' | 'pathname'>>(
+	proc: P,
+	pathname: S,
+	config: Config,
+): Config & { proc: P; pathname: S } => {
+	return { ...config, proc, pathname } satisfies Endpoint<P, S>;
+};

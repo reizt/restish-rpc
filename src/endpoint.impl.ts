@@ -1,55 +1,52 @@
-import type { Endpoint, EndpointImpl, EndpointInput, EndpointResult } from './endpoint';
-import type { ProcImpl, ProcInput } from './proc';
+import type { z } from 'zod';
+import type { Endpoint } from './endpoint';
+import type { DeleteIfValueIsNeverOrEmptyObj, DeleteNever, PartialIfOptional, ValueOf } from './utils';
 
-const objectFind = <T>(obj: T, predicate: <K extends keyof T>(key: K, value: T[K]) => boolean): T[keyof T] | undefined => {
-	for (const key in obj) {
-		if (predicate(key, obj[key])) {
-			return obj[key];
-		}
-	}
-	return undefined;
-};
+export type EndpointImpl<E> = E extends Endpoint<infer _P, infer _S> ? EndpointImplType<E> : never;
+type EndpointImplType<E> = (input: EndpointInput<E>) => Promise<EndpointOutput<E>>;
 
-type ForceProc<E> = E extends Endpoint<infer P, infer S> ? P : never;
-type ForcePathname<E> = E extends Endpoint<infer P, infer S> ? S : never;
-export const autoEndpointImpl = <E>(endpoint: E, procImpl: ProcImpl<ForceProc<E>>): EndpointImpl<E> => {
-	type $P = ForceProc<E>;
-	type $S = ForcePathname<E>;
-	type $E = Endpoint<$P, $S>;
-	const ep: $E = endpoint as any;
-	return (async (input: EndpointInput<$P, $S, $E>) => {
-		const procInput: ProcInput<$P> = {} as any;
-		for (const param in ep.request.mapping) {
-			const [sourceGroup, sourceKey] = ep.request.mapping[param].split('.');
-			if (sourceGroup == null || sourceKey == null) continue;
-			// @ts-ignore
-			input[sourceGroup] ??= {} as any;
-			// @ts-ignore
-			procInput[param] = input[sourceGroup][sourceKey];
-		}
-		const procOutput = await procImpl(procInput);
+type InputParamType<E, Param> = E extends Endpoint<infer _P, infer _S> ? (Param extends keyof E['proc']['input'] ? z.infer<E['proc']['input'][Param]> : never) : never;
 
-		const resultDef = objectFind(ep.response, (result, resultDef) => {
-			return result === procOutput.result && resultDef != null;
-		});
-		if (resultDef == null) {
-			throw new Error(`result "${String(procOutput.result)}" is not defined`);
-		}
+type MapRequestGroup<E, G extends string> = E extends Endpoint<infer _P, infer _S>
+	? PartialIfOptional<{
+			[K in keyof E['request']['mapping'] as E['request']['mapping'][K] extends `${G}.${infer Param}` ? Param : never]: InputParamType<E, K>;
+		}>
+	: never;
+export type EndpointInput<E> = DeleteIfValueIsNeverOrEmptyObj<{
+	path: MapRequestGroup<E, 'path'>;
+	query: MapRequestGroup<E, 'query'>;
+	header: MapRequestGroup<E, 'header'>;
+	cookie: MapRequestGroup<E, 'cookie'>;
+	body: MapRequestGroup<E, 'body'>;
+}>;
 
-		const output: EndpointResult<$P, $S, $E, keyof $E['response']> = {
-			status: resultDef.status,
-		} as any;
-		const procOutputValue = (procOutput as any).value;
-		if (procOutputValue == null) {
-			return output;
-		}
+type OutputParamType<E, R, Param> = E extends Endpoint<infer _P, infer _S>
+	? R extends keyof E['proc']['output']
+		? Param extends keyof E['proc']['output'][R]
+			? z.infer<E['proc']['output'][R][Param]>
+			: never
+		: never
+	: never;
 
-		for (const param in resultDef.mapping) {
-			const [mapToGroup, mapToKey] = resultDef.mapping[param].split('.');
-			if (mapToGroup == null || mapToKey == null) continue;
-			(output as any)[mapToGroup] ??= {};
-			(output as any)[mapToGroup][mapToKey] = procOutputValue[param];
-		}
-		return output;
-	}) as unknown as EndpointImpl<E>;
-};
+type MapResponseGroup<E, R, G extends string> = E extends Endpoint<infer _P, infer _S>
+	? R extends keyof E['response']
+		? PartialIfOptional<{
+				[K in keyof E['response'][R]['mapping'] as E['response'][R]['mapping'][K] extends `${G}.${infer Param}` ? Param : never]: OutputParamType<E, R, K>;
+			}>
+		: never
+	: never;
+export type EndpointOutput<E> = E extends Endpoint<infer _P, infer _S>
+	? ValueOf<{
+			[R in keyof E['response']]: EndpointResult<E, R>;
+		}>
+	: never;
+export type EndpointResult<E, R> = E extends Endpoint<infer _P, infer _S>
+	? R extends keyof E['response']
+		? DeleteIfValueIsNeverOrEmptyObj<{
+				status: E['response'][R]['status'];
+				header: DeleteNever<MapResponseGroup<E, R, 'header'>>;
+				cookie: DeleteNever<MapResponseGroup<E, R, 'cookie'>>;
+				body: DeleteNever<MapResponseGroup<E, R, 'body'>>;
+			}>
+		: never
+	: never;

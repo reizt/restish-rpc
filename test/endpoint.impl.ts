@@ -1,4 +1,4 @@
-import type { EndpointImpl } from '../src';
+import type { EndpointImpl } from '../src/endpoint.impl';
 import type { getPostE } from './endpoint';
 
 // You don't have to write the endpoint implementation by hand.
