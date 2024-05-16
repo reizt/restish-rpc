@@ -4,4 +4,4 @@ pre-commit:
   commands:
     check:
       glob: '*.{js,ts,jsx,tsx}'
-      run: npm run check-all
+      run: npm run check
