@@ -1,7 +1,7 @@
 import type { Proc } from './proc';
 import type { SafeOmit } from './utils';
 
-export type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options';
+export type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options';
 
 // Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 type InformationalStatusCode = 100 | 101 | 102 | 103;
