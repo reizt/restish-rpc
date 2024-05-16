@@ -4,8 +4,7 @@
 		"enabled": true
 	},
 	"files": {
-		"include": ["src", "*.*"],
-		"ignore": ["node_modules", ".git", "tmp", "lib-*"]
+		"include": ["src/**/*.ts", "test/**/*.ts", "*.ts", "*.mts", "*.json", "*.jsonc"]
 	},
 	"formatter": {
 		"indentStyle": "tab",

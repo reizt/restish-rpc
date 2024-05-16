@@ -1,9 +1,9 @@
 {
 	"extends": "./tsconfig.json",
-	"include": ["src"],
+	"include": ["src/**/*.ts"],
 	"compilerOptions": {
 		"module": "CommonJS",
-		"outDir": "lib-cjs",
+		"outDir": "lib/cjs",
 		"declaration": false,
 		"verbatimModuleSyntax": false
 	}

@@ -1,6 +1,5 @@
 {
-	"include": ["src/**/*.ts", "test/**/*.ts", "*.ts"],
-	"exclude": ["node_modules"],
+	"include": ["src/**/*.ts", "test/**/*.ts", "env.*.ts", "vitest.config.mts"],
 	"compilerOptions": {
 		// target
 		"target": "ES2022",
