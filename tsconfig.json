@@ -8,7 +8,6 @@
 		"types": ["vitest/globals"],
 
 		// paths
-		"baseUrl": "./src",
 		"outDir": "tmp",
 
 		// transpilation

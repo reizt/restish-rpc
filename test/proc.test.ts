@@ -1,4 +1,4 @@
-import type { ProcInput, ProcResult } from 'proc';
+import type { ProcInput, ProcResult } from '../src';
 import { sampleAuthToken, samplePost } from './data';
 import type { getPostP } from './proc';
 import { getPostPI } from './proc.impl';
